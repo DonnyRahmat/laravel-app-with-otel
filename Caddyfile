@@ -1,0 +1,42 @@
+#{
+#    frankenphp
+#}
+#
+#:8080 {
+#    log {
+#        level info
+#    }
+#
+#    root * /home/project/lgtp/laravel_12/public
+#
+#    route {
+#        # Amankan aset statis (js, css, png) agar di-serve langsung oleh Caddy file_server
+#        file_server
+#
+#        # Sisanya dilempar ke worker murni
+#        frankenphp_worker /home/project/lgtp/laravel_12/public/index.php
+#    }
+#}
+
+{
+    frankenphp
+    # aktifkan worker mode
+}
+
+:8080 {
+    log {
+        level info
+    }
+
+    root * /home/project/lgtp/laravel_12/public
+
+    # Serve static files langsung, sisanya ke PHP worker
+    encode zstd br gzip
+
+    php_server {
+        worker {
+            file /home/project/lgtp/laravel_12/public/index.php
+            num 2
+        }
+    }
+}
